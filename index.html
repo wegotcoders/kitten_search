@@ -1,0 +1,79 @@
+<html>
+<head>
+  <title>My amazing image search demo</title>
+  <style>
+    body {
+      width: 100%;
+      background: #FFF  url('http://wegotcoders.com/microphone.jpg') no-repeat center top;
+      background-size: 50%;
+    }
+
+    #speech {
+        width: 60%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+  </style>
+
+  <script>
+     // Recognise the user's voice
+    var recognition = new webkitSpeechRecognition();
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recognition.onresult = function (event) {
+
+      // Run this code everytime some speech is recognised
+      var bubble = document.getElementById("speech");
+      bubble.innerHTML = "";
+
+
+      for(var i = 0; i < event.results.length; i++) {
+        for(var j = 0; j < event.results[i].length; j++) {
+          bubble.innerHTML +=  event.results[i][j].transcript;
+          var searchTerm = event.results[i][j].transcript;
+          var url = "https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=34f416b80aacb45ee0687cb49bf6f57a&tags=" + searchTerm + "&format=json";
+          console.log(url);
+          console.log(searchTerm);
+
+
+          var myRequest = new XMLHttpRequest();
+          myRequest.addEventListener("load", apiResult);
+          myRequest.open("GET", url);
+          myRequest.send();
+
+        }
+      }
+      console.log(event);
+    }
+    recognition.start();
+
+    function apiResult(result) {
+      eval(result.currentTarget.responseText);
+    }
+
+    function jsonFlickrApi(result) {
+      for (var a = 0; a < result.photos.photo.length; a++) {
+        var photo = result.photos.photo[a];
+    var photoURL = "https://farm" + photo.farm + ".staticflickr.com/" + photo.server + "/" + photo.id + "_" + photo.secret + "_m.jpg" ;
+    console.log(photoURL)
+
+
+    // finish this off!!!
+
+    picture = document.createElement('img')
+    picture.setAttribute("src", photoURL)
+    document.getElementById("speech").appendChild(picture)
+  }
+
+
+
+    }
+
+  </script>
+</head>
+<body>
+  <main id="speech" class="triangle-obtuse">
+      say cat!
+  </main>
+</body>
+</html>
